@@ -6,7 +6,7 @@
 #define TAMANHO_NOME (11 * sizeof(char))
 #define TAMANHO_IDADE (1 * sizeof(int))
 #define TAMANHO_TELEFONE (1 * sizeof(int))
-#define TAMANHO_CADASTRO ((10 * sizeof(char)) + (1 * sizeof(int)) + (1 * sizeof(int)))
+#define TAMANHO_CADASTRO ((11 * sizeof(char)) + (1 * sizeof(int)) + (1 * sizeof(int)))
 
 int Menu(void);
 void Listar(void *pBuffer, int i);

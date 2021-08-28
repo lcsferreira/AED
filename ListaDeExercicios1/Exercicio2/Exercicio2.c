@@ -46,16 +46,17 @@ int main() {
           for (int i = 0; i <= tamanhoDoNome; i++) {
             strcpy((pontAux), pontAux + 1);
           }
+          qntdNomes--;
         } else {
           printf("nome nao encontrado!!\n");
+          break;
         }
-        qntdNomes--;
         if (qntdNomes == 0) {
           free(ListaNomes);
         } else {
-          ListaNomes = (char *)realloc(ListaNomes, (numeroCaracteres + 1) * sizeof(char));
           ListaNomes[numeroCaracteres - tamanhoDoNome - 1] = '\0';
           numeroCaracteres = strlen(ListaNomes);
+          ListaNomes = (char *)realloc(ListaNomes, (numeroCaracteres + 1) * sizeof(char));
         }
       } else {
         printf("nao ha nomes para serem excluidos!\n");
