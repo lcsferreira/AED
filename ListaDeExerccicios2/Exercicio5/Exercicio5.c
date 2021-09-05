@@ -43,7 +43,7 @@ int main() {
 
   return 0;
 }
-
+//infoPessoas[0]//infoPessoas[1]
 void cadastrarPessoa(Pessoa *infoPessoas, int numPessoas) {
   printf("Digite o nome da pessoa: ");
   scanf("%s", infoPessoas[numPessoas].nome);

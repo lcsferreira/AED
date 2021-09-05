@@ -58,7 +58,7 @@ int main() {
   } while (*choice != '5');
   return 0;
 }
-
+//pessoas[0]//pessoas[1]
 void *InserirCadastro(void *pBuffer) {
   int *tamanhoDaLista = pBuffer;
   if (*tamanhoDaLista == 10) {
@@ -125,7 +125,7 @@ void *ExcluirCadastro(void *pBuffer) {
     return pBuffer;
   }
   char *nomeBusca = (pBuffer + sizeof(int) + sizeof(char) + sizeof(int));
-  printf("Insira o nome para buscar: ");
+  printf("Insira o nome para excluir: ");
   scanf("%s", nomeBusca);
 
   int *i = (pBuffer + sizeof(int) + sizeof(char));
