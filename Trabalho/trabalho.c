@@ -2,25 +2,36 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TAMANHO_NOME (11 * sizeof(char))
-#define TAMANHO_IDADE (1 * sizeof(int))
-#define TAMANHO_TELEFONE (1 * sizeof(int))
-#define TAMANHO_CADASTRO ((11 * sizeof(char)) + (2 * sizeof(int)))
+#define NOME 0
+#define IDADE (sizeof(char) * 11)
+#define TELEFONE ((sizeof(char) * 11) + sizeof(int))
+#define P_NEXT ((sizeof(char) * 11) + (sizeof(int) * 2))
+#define P_PREVIOUS ((sizeof(char) * 11) + (sizeof(int) * 2) + sizeof(void *))
 
-void InserirCadastro(void *pBuffer);
-// void imprimeNodo(void *ponteiro);
+#define CADASTRO ((11 * sizeof(char)) + (2 * sizeof(int)) + (2 * sizeof(void *)))
+
+#define N_PESSOAS 0
+#define CHOICE (sizeof(int))
+#define NOME_BUSCA (sizeof(char) + sizeof(int))
+#define P_FIRST (sizeof(char) + sizeof(int) + (sizeof(char) * 10))
+#define P_LAST (sizeof(char) + sizeof(int) + (sizeof(char) * 10) + sizeof(void *))
+
+void inserirCadastro(void *pBuffer);
+void imprimeNodo(void *ponteiro);
 void listar(void *pbuffer);
+void limpaFila(void *pBuffer);
+void ordenar(void *pBuffer, void *pCadastro);
 
 int main() {
-  void *pBuffer = (void *)malloc(sizeof(int) + sizeof(char) + sizeof(void *) * 2);
-  //[nPessoas][choice][pFirst][pLast]
+  void *pBuffer = (void *)malloc(sizeof(int) + sizeof(char) * 11 + sizeof(void *) * 2);
+  //[nPessoas][choice][nomeBuscar][pFirst][pLast]
   if (pBuffer == NULL) {
     printf("Erro de memoria!!\n");
     exit(1);
   }
 
-  *(int *)(pBuffer) = 0;
-  char *choice = (pBuffer + sizeof(int));
+  *(int *)(pBuffer + N_PESSOAS) = 0;
+  char *choice = (pBuffer + CHOICE);
 
   do {
     printf("-- MENU:\n");
@@ -35,20 +46,21 @@ int main() {
 
     switch (*choice) {
     case '1':
-      InserirCadastro(pBuffer);
+      inserirCadastro(pBuffer);
       //inserir
       break;
     case '2':
       //remover
       break;
     case '3':
-      //procurar
+      buscarNome(pBuffer);
       break;
     case '4':
       listar(pBuffer);
       break;
     case '5':
       //sair
+      limpaFila(pBuffer);
       free(pBuffer);
       exit(0);
     }
@@ -57,44 +69,112 @@ int main() {
   return 0;
 }
 
-void InserirCadastro(void *pBuffer) {
-  int *tamanhoDaLista = &*(int *)pBuffer;
+void inserirCadastro(void *pBuffer) {
+  int *tamanhoDaLista = &*(int *)(pBuffer + N_PESSOAS);
 
-  void *cadastro = malloc(TAMANHO_CADASTRO + sizeof(void *));
-
+  void *cadastro = malloc(CADASTRO);
+  printf("--INSERINDO CADASTRO--\n");
   printf("Insira um nome: ");
-  scanf("%s", ((char *)cadastro));
+  scanf("%s", ((char *)cadastro + NOME));
   printf("Insira a idade: ");
-  scanf("%d", (int *)(cadastro + TAMANHO_NOME));
+  scanf("%d", (int *)(cadastro + IDADE));
   printf("Insira um telefone: ");
-  scanf("%d", (int *)(cadastro + TAMANHO_NOME + TAMANHO_IDADE));
+  scanf("%d", (int *)(cadastro + TELEFONE));
 
-  *(void **)(cadastro + TAMANHO_NOME + TAMANHO_IDADE + TAMANHO_TELEFONE) = NULL;
+  *(void **)(cadastro + P_NEXT) = NULL;
+  *(void **)(cadastro + P_PREVIOUS) = NULL;
 
   if (*tamanhoDaLista == 0) {
-    *(void **)(pBuffer + sizeof(int) + sizeof(char)) = cadastro;
-    *(void **)(pBuffer + sizeof(int) + sizeof(char) + sizeof(void *)) = cadastro;
+    *(void **)(pBuffer + P_FIRST) = cadastro;
+    *(void **)(pBuffer + P_LAST) = cadastro;
   } else {
-    void *ultimaPessoaAtual = *(void **)(pBuffer + sizeof(int) + sizeof(char) + sizeof(void *));
-    *(void **)(ultimaPessoaAtual + TAMANHO_NOME + TAMANHO_IDADE + TAMANHO_TELEFONE) = cadastro;
-    *(void **)(pBuffer + sizeof(int) + sizeof(char) + sizeof(void *)) = cadastro;
+    ordenar(pBuffer, cadastro);
   }
 
   *tamanhoDaLista = *tamanhoDaLista + 1;
 }
 
 void imprimeNodo(void *ponteiro) {
-  printf("%s\n", (char *)((char *)ponteiro));
-  printf("%d\n", *(int *)(ponteiro + TAMANHO_NOME));
-  printf("%d\n", *(int *)(ponteiro + TAMANHO_NOME + TAMANHO_IDADE));
+  printf("%s\n", (char *)((char *)ponteiro + NOME));
+  printf("%d\n", *(int *)(ponteiro + IDADE));
+  printf("%d\n", *(int *)(ponteiro + TELEFONE));
   printf("----------\n");
 }
 
+void buscarNome(void *pBuffer) {
+  char *nomeBuscar = &*(char *)(pBuffer + NOME_BUSCA);
+  printf("--BUSCAR--\n");
+  printf("Insira o nome: ");
+  scanf("%s", nomeBuscar);
+  void *cadastro = *(void **)(pBuffer + P_FIRST);
+
+  printf("Buscando");
+  while (cadastro != NULL) {
+    printf("...\n");
+    if (strcmp(nomeBuscar, (char *)(cadastro + NOME)) == 0) {
+      imprimeNodo(cadastro);
+    }
+    cadastro = *(void **)(cadastro + P_NEXT);
+  }
+  printf("Fim da lista!\n");
+}
+
 void listar(void *pBuffer) {
-  void *temp = *(void **)(pBuffer + sizeof(int) + sizeof(char));
+  void *temp = *(void **)(pBuffer + P_FIRST);
   printf("--LISTA--\n");
   while (temp != NULL) {
     imprimeNodo(temp);
-    temp = *(void **)(temp + TAMANHO_NOME + TAMANHO_IDADE + TAMANHO_TELEFONE);
+    temp = *(void **)(temp + P_NEXT);
   }
 }
+
+void limpaFila(void *pBuffer) {
+  void *temp = *(void **)(pBuffer + P_FIRST);
+
+  printf("limpando...\n");
+
+  while (*(void **)(pBuffer + P_FIRST) != NULL) {
+    temp = *(void **)(pBuffer + P_FIRST);
+    *(void **)(pBuffer + P_FIRST) = *(void **)(temp + P_NEXT);
+    free(temp);
+    printf("...\n");
+  }
+
+  printf("Fila limpa com sucesso!\n");
+}
+
+void ordenar(void *pBuffer, void *pCadastro) {
+  void *cadastroAux = *(void **)(pBuffer + P_LAST);
+
+  if (strcmp((char *)(cadastroAux + NOME), (char *)(pCadastro + NOME)) <= 0) {
+
+    *(void **)(pCadastro + P_PREVIOUS) = *(void **)(pBuffer + P_LAST);
+    cadastroAux = *(void **)(pBuffer + P_LAST);
+    *(void **)(pBuffer + P_LAST) = pCadastro;
+    *(void **)(cadastroAux + P_NEXT) = pCadastro;
+    return;
+
+  } else {
+    while (cadastroAux != NULL) {
+      if (strcmp((char *)(cadastroAux + NOME), (char *)(pCadastro + NOME)) <= 0) {
+        *(void **)(pCadastro + P_NEXT) = *(void **)(cadastroAux + P_NEXT);
+        *(void **)(pCadastro + P_PREVIOUS) = cadastroAux;
+
+        void *temp = *(void **)(cadastroAux + P_NEXT);
+        *(void **)(temp + P_PREVIOUS) = pCadastro;
+
+        *(void **)(cadastroAux + P_NEXT) = pCadastro;
+        return;
+      }
+      cadastroAux = *(void **)(cadastroAux + P_PREVIOUS);
+    }
+    printf("ENTROOOO");
+    *(void **)(pCadastro + P_NEXT) = *(void **)(pBuffer + P_FIRST);
+    cadastroAux = *(void **)(pBuffer + P_FIRST);
+    *(void **)(cadastroAux + P_PREVIOUS) = pCadastro;
+    *(void **)(pBuffer + P_FIRST) = pCadastro;
+  }
+}
+/*
+-----remover-----
+*/
