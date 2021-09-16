@@ -21,6 +21,7 @@ void imprimeNodo(void *ponteiro);
 void listar(void *pbuffer);
 void limpaFila(void *pBuffer);
 void ordenar(void *pBuffer, void *pCadastro);
+void removerPrimeiro(void *pBuffer);
 
 int main() {
   void *pBuffer = (void *)malloc(sizeof(int) + sizeof(char) * 11 + sizeof(void *) * 2);
@@ -47,10 +48,9 @@ int main() {
     switch (*choice) {
     case '1':
       inserirCadastro(pBuffer);
-      //inserir
       break;
     case '2':
-      //remover
+      removerPrimeiro(pBuffer);
       break;
     case '3':
       buscarNome(pBuffer);
@@ -59,7 +59,6 @@ int main() {
       listar(pBuffer);
       break;
     case '5':
-      //sair
       limpaFila(pBuffer);
       free(pBuffer);
       exit(0);
@@ -102,45 +101,61 @@ void imprimeNodo(void *ponteiro) {
 }
 
 void buscarNome(void *pBuffer) {
-  char *nomeBuscar = &*(char *)(pBuffer + NOME_BUSCA);
-  printf("--BUSCAR--\n");
-  printf("Insira o nome: ");
-  scanf("%s", nomeBuscar);
-  void *cadastro = *(void **)(pBuffer + P_FIRST);
+  int *tamanhoDaLista = &*(int *)(pBuffer + N_PESSOAS);
+  if (*tamanhoDaLista == 0) {
+    printf("Fila vazia!!\n");
+  } else {
+    char *nomeBuscar = &*(char *)(pBuffer + NOME_BUSCA);
+    printf("--BUSCAR--\n");
+    printf("Insira o nome: ");
+    scanf("%s", nomeBuscar);
+    void *cadastro = *(void **)(pBuffer + P_FIRST);
 
-  printf("Buscando");
-  while (cadastro != NULL) {
-    printf("...\n");
-    if (strcmp(nomeBuscar, (char *)(cadastro + NOME)) == 0) {
-      imprimeNodo(cadastro);
+    printf("Buscando");
+    while (cadastro != NULL) {
+      printf("...\n");
+      if (strcmp(nomeBuscar, (char *)(cadastro + NOME)) == 0) {
+        imprimeNodo(cadastro);
+      }
+      cadastro = *(void **)(cadastro + P_NEXT);
     }
-    cadastro = *(void **)(cadastro + P_NEXT);
+    printf("Fim da lista!\n");
   }
-  printf("Fim da lista!\n");
 }
 
 void listar(void *pBuffer) {
   void *temp = *(void **)(pBuffer + P_FIRST);
-  printf("--LISTA--\n");
-  while (temp != NULL) {
-    imprimeNodo(temp);
-    temp = *(void **)(temp + P_NEXT);
+  int *tamanhoDaLista = &*(int *)(pBuffer + N_PESSOAS);
+
+  if (*tamanhoDaLista == 0) {
+    printf("Fila vazia!!\n");
+  } else {
+    printf("--FILA--\n");
+    while (temp != NULL) {
+      imprimeNodo(temp);
+      temp = *(void **)(temp + P_NEXT);
+    }
   }
 }
 
 void limpaFila(void *pBuffer) {
   void *temp = *(void **)(pBuffer + P_FIRST);
+  int *tamanhoDaLista = &*(int *)(pBuffer + N_PESSOAS);
+  if (*tamanhoDaLista == 0) {
+    printf("Ate mais!!\n");
+  } else {
+    printf("limpando...\n");
 
-  printf("limpando...\n");
+    while (*(void **)(pBuffer + P_FIRST) != NULL) {
+      temp = *(void **)(pBuffer + P_FIRST);
+      *(void **)(pBuffer + P_FIRST) = *(void **)(temp + P_NEXT);
+      free(temp);
+      printf("...\n");
+    }
 
-  while (*(void **)(pBuffer + P_FIRST) != NULL) {
-    temp = *(void **)(pBuffer + P_FIRST);
-    *(void **)(pBuffer + P_FIRST) = *(void **)(temp + P_NEXT);
-    free(temp);
-    printf("...\n");
+    printf("Fila limpa com sucesso!\n");
+    printf("Ate mais!!\n");
   }
-
-  printf("Fila limpa com sucesso!\n");
 }
 
 void ordenar(void *pBuffer, void *pCadastro) {
@@ -175,6 +190,27 @@ void ordenar(void *pBuffer, void *pCadastro) {
     *(void **)(pBuffer + P_FIRST) = pCadastro;
   }
 }
-/*
------remover-----
-*/
+
+void removerPrimeiro(void *pBuffer) {
+  int *tamanhoDaLista = &*(int *)(pBuffer + N_PESSOAS);
+  if (*tamanhoDaLista == 0) {
+    printf("Fila vazia!!\n");
+    return;
+  } else if (*tamanhoDaLista == 1) {
+    printf("Removendo...\n");
+    void *temp = *(void **)(pBuffer + P_FIRST);
+    *(void **)(pBuffer + P_FIRST) = NULL;
+    *(void **)(pBuffer + P_LAST) = NULL;
+    free(temp);
+    *tamanhoDaLista = *tamanhoDaLista - 1;
+    return;
+  }
+  printf("Removendo...\n");
+  void *temp = *(void **)(pBuffer + P_FIRST);
+  *(void **)(pBuffer + P_FIRST) = *(void **)(temp + P_NEXT);
+  free(temp);
+  void *aux = *(void **)(pBuffer + P_FIRST);
+  *(void **)(aux + P_PREVIOUS) = NULL;
+  *tamanhoDaLista = *tamanhoDaLista - 1;
+  printf("Primeiro removido com sucesso!\n");
+}
