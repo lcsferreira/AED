@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+//DEFINE VARIAVEIS CADASTRO
 #define NOME 0
 #define IDADE (sizeof(char) * 11)
 #define TELEFONE ((sizeof(char) * 11) + sizeof(int))
@@ -10,12 +11,15 @@
 
 #define CADASTRO ((11 * sizeof(char)) + (2 * sizeof(int)) + (2 * sizeof(void *)))
 
+//DEFINE VARIAVEIS pBuffer
 #define N_PESSOAS 0
 #define CHOICE (sizeof(int))
 #define NOME_BUSCA (sizeof(char) + sizeof(int))
 #define P_FIRST (sizeof(char) + sizeof(int) + (sizeof(char) * 10))
 #define P_LAST (sizeof(char) + sizeof(int) + (sizeof(char) * 10) + sizeof(void *))
+#define ITERATOR (sizeof(char) + sizeof(int) + (sizeof(char) * 10) + (2 * sizeof(void *)))
 
+//FUNÇÕES DECLARADAS
 void inserirCadastro(void *pBuffer);
 void imprimeNodo(void *ponteiro);
 void listar(void *pbuffer);
@@ -25,7 +29,7 @@ void removerPrimeiro(void *pBuffer);
 
 int main() {
   void *pBuffer = (void *)malloc(sizeof(int) + sizeof(char) * 11 + sizeof(void *) * 2);
-  //[nPessoas][choice][nomeBuscar][pFirst][pLast]
+  //[nPessoas][choice][nomeBuscar][pFirst][pLast][iterator]
   if (pBuffer == NULL) {
     printf("Erro de memoria!!\n");
     exit(1);
@@ -94,9 +98,9 @@ void inserirCadastro(void *pBuffer) {
 }
 
 void imprimeNodo(void *ponteiro) {
-  printf("%s\n", (char *)((char *)ponteiro + NOME));
-  printf("%d\n", *(int *)(ponteiro + IDADE));
-  printf("%d\n", *(int *)(ponteiro + TELEFONE));
+  printf("\t%s\n", (char *)((char *)ponteiro + NOME));
+  printf("\t%d\n", *(int *)(ponteiro + IDADE));
+  printf("\t%d\n", *(int *)(ponteiro + TELEFONE));
   printf("----------\n");
 }
 
@@ -126,14 +130,18 @@ void buscarNome(void *pBuffer) {
 void listar(void *pBuffer) {
   void *temp = *(void **)(pBuffer + P_FIRST);
   int *tamanhoDaLista = &*(int *)(pBuffer + N_PESSOAS);
+  int *i = &*(pBuffer + ITERATOR);
+  *i = 1;
 
   if (*tamanhoDaLista == 0) {
     printf("Fila vazia!!\n");
   } else {
     printf("--FILA--\n");
     while (temp != NULL) {
+      printf("%do", *i);
       imprimeNodo(temp);
       temp = *(void **)(temp + P_NEXT);
+      *i = *i + 1;
     }
   }
 }
