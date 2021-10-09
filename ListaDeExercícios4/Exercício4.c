@@ -12,7 +12,6 @@ int Insere(No **ppRaiz, int valor);
 int Balanceamento(No **ppRaiz);
 int FB(No *pRaiz);
 int Altura(No *pRaiz);
-int VerificaRotacaoSimplesOuDupla(No **ppRaiz);
 void RotacaoEsquerdaSimples(No **ppRaiz);
 void RotacaoDireitaSimples(No **ppRaiz);
 int balancaEsquerda(No **ppRaiz);
