@@ -1,0 +1,209 @@
+definir a estrutura de cada nó;
+
+typedef struct No{
+  int valor;
+  No *pEsq;
+  No *pDir;
+} No;
+
+Na main, teremos numeros aleatórios a serem inseridos;
+
+int i=0, valorInserir;
+No **ppRaiz = NULL;
+
+printf("Digite qunatos nós você quer: ");
+scanf("%d", &numeroDeNos);
+
+while(i < numeroDeNos){
+  valorInserir = srand(time(0));
+  Insere(ppRaiz, valorInserir);
+  i++;
+}
+
+if(EhArvoreArvl(No **ppRaiz)){
+  printf("Arvore AVL");
+}else{
+  printf("Nao eh Arvore AVL");
+}
+
+quando for inserir o primeiro nó, *pRaiz = nó (fazer o pRaiz apontar para ele)
+
+Na hora da inserção, chamar a função verificaRotaçãoSimplesOuDupla
+se retornar 0, esq simples
+se retornar 1, dir simples
+se retornar 2, esq dupla
+se retornar 3, dir dupla
+
+função inserção
+
+int Insere(No **ppRaiz, int valor){
+
+  if(*ppRaiz == NULL){ //é o primeiro nó
+    *ppRaiz = (No*)malloc(sizeof(No));
+    (*ppRaiz).valor = valor;
+    (*ppRaiz).pEsq = NULL;
+    (*ppRaiz).pDir = NULL;
+    return 1;//bem sucedido
+  }
+  else if((*ppRaiz).valor > valor){
+    if(Insere(&(*ppRaiz).pEsq), valor){
+      if(Balanceamento(ppRaiz)){
+        return 0; //houve balanceamento;
+      }else{
+        return 1; //bem sucedido sem balanceamento;
+      }
+    }
+  }
+  else if((*ppRaiz).valor < valor){
+    if(Insere(&(*ppRaiz).pDir), valor){
+      if(Balanceamento(ppRaiz)){
+        return 0; //houve balanceamento;
+      }else{
+        return 1; //bem sucedido sem balanceamento;
+      }
+    }
+  }
+  else{
+    return 0; //valor já existente;
+  }
+}
+
+função de balanceamento
+
+int Balanceamento(No **ppRaiz){
+  int tipoBalanca = verificaRotaçãoSimplesOuDupla(ppRaiz);
+  switch(tipoBalanca){
+    case 0:
+      rotacaoEsquerdaSimples(ppRaiz);
+      return 1; //bem sucedido
+      break;
+    case 1:
+      rotacaDireitaSimples(ppRaiz);
+      return 1; //bem sucedido
+      break;
+    case 2:
+      rotacaoEsquerdaDupla(ppRaiz);
+      return 1; //bem sucedido
+      break;
+    case 3:
+      rotacaoDireitaDupla(ppRaiz);
+      return 1; //bem sucedido
+      break;
+  }
+}
+
+função rotacao esquerda simples
+
+void rotacaoEsquerdaSimples(No **ppRaiz){
+  No *pAux;
+
+  pAux = (*ppRaiz).pDir;
+  (*ppRaiz).pDir = pAux.pEsq;
+  pAux.pEsq = (*ppRaiz);
+  (*ppRaiz) = pAux;
+}
+
+funcao rotacao direita simples
+
+void rotacaoDireitaSimples(No **ppRaiz){
+  No *pAux;
+
+  pAux = (*ppRaiz).pEsq;
+  (*ppRaiz).pEsq = pAux.pDir;
+  pAux.pDir = (*ppRaiz);
+  (*ppRaiz) = pAux;
+}
+
+função rotacao esquerda dupla
+
+void rotacaoEsquerdaDupla(No **ppRaiz){
+  rotacaoEsquerdaSimples(&((*ppRaiz).pEsq));
+  rotacaoDireitaSimples(&(*ppRaiz)); // ou ppRaiz
+  return;
+}
+
+função rotacao direita dupla
+
+void rotacaoDireitaDupla(No **ppRaiz){
+  rotacaoDireitaSimples(&((*ppRaiz).pDir));
+  rotacaoEsquerdaSimples(&(*ppRaiz)); // ou ppRaiz
+  return;
+}
+
+
+função para verificar o FB
+
+int Fb (No *pRaiz){
+  if(pRaiz == NULL){
+    return 0; //se não tiver nenhum elemento, FB = 0
+  }
+  return Altura(pRaiz.pEsq) - Altura(pRaiz.pDir); //retorna o resultado da subtração da altura da esquerda com a da direita;
+}
+
+função para calcular a altura
+
+int Altura(No *pRaiz){
+  int Esq, Dir;
+
+  if(pRaiz == NULL){
+    return 0; //se não houver um nó, altura 0
+  }
+
+  Esq = Altura(pRaiz.pEsq); 
+  Dir = Altura(pRaiz.pDir);//chama a próprioa função para calcular a altura do próprio nó
+
+  if(Esq > Dir){ 
+    return Esq +1; 
+  }else{
+    return Dir + 1;
+  }
+}
+
+função verificar qual rotação fazer
+
+int verificaRotaçãoSimplesOuDupla(noRaiz){
+  int FBsubAvoreEsq, FBsubAvoreDir, FBatual;
+
+  FBatual = FB(noRaiz);
+  FBsubAvoreEsq = FB(noRaiz.pEsq);
+  FBsubAvoreDir = FB(noRaiz.pDir);
+
+  if(FBatual > 1){
+    if(FBsubAvoreEsq < 1){
+      return 3 (rotaçãoDireitaDupla)
+    }else{
+      return 1 (rotaçãoDireitaSimples)
+    }
+  }else if(FBatual < -1){
+    if(FBsubAvoreDir > 1){
+      return 2 (rotaçãoEsquerdaDupla)
+    }else{
+      return 0 (rotaçãoEsquerdaSimples)
+    }
+  }
+}
+
+função para verificar se a árvore está ok
+
+int EhArvoreArvl(No* pRaiz){
+  int fb;
+
+  if (pRaiz == NULL)
+    return 1;
+
+  if (!EhArvoreArvl(pRaiz->pEsq)){
+    return 0;
+  }
+  if (!EhArvoreArvl(pRaiz->pDir)){
+    return 0;
+  }
+
+  fb = FB (pRaiz);
+
+  if ( ( fb > 1 ) || ( fb < -1) ){
+    return 0; 
+  }else{
+    return 1; 
+  }
+}
+

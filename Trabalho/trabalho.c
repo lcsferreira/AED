@@ -22,13 +22,14 @@
 //FUNÇÕES DECLARADAS
 void inserirCadastro(void *pBuffer);
 void imprimeNodo(void *ponteiro);
+void buscarNome(void *pBuffer);
 void listar(void *pbuffer);
 void limpaFila(void *pBuffer);
 void ordenar(void *pBuffer, void *pCadastro);
 void removerPrimeiro(void *pBuffer);
 
 int main() {
-  void *pBuffer = (void *)malloc(sizeof(int) + sizeof(char) * 11 + sizeof(void *) * 2);
+  void *pBuffer = (void *)malloc(sizeof(int) * 2 + sizeof(char) * 11 + sizeof(void *) * 2);
   //[nPessoas][choice][nomeBuscar][pFirst][pLast][iterator]
   if (pBuffer == NULL) {
     printf("Erro de memoria!!\n");
@@ -36,20 +37,10 @@ int main() {
   }
 
   *(int *)(pBuffer + N_PESSOAS) = 0;
-  char *choice = (pBuffer + CHOICE);
 
-  do {
-    printf("-- MENU:\n");
-    printf("\t 1. Inserir um cadastro\n");
-    printf("\t 2. Excluir um cadastro\n");
-    printf("\t 3. Procurar um cadastro\n");
-    printf("\t 4. Listar\n");
-    printf("\t 5. Sair\n");
-    printf("-- Digite sua escolha: ");
-    scanf(" %c", choice);
-    getchar(); //limpa o buffer do teclado
-
-    switch (*choice) {
+  while (1) {
+    menu(pBuffer);
+    switch (*(char *)(pBuffer + CHOICE)) {
     case '1':
       inserirCadastro(pBuffer);
       break;
@@ -66,10 +57,26 @@ int main() {
       limpaFila(pBuffer);
       free(pBuffer);
       exit(0);
+      break;
+    default:
+      printf("Digite uma opcao valida!\n");
+      break;
     }
-  } while (choice != '5');
+  }
 
   return 0;
+}
+
+void menu(void *pBuffer) {
+  printf("-- MENU:\n");
+  printf("\t 1. Inserir um cadastro\n");
+  printf("\t 2. Excluir um cadastro\n");
+  printf("\t 3. Procurar um cadastro\n");
+  printf("\t 4. Listar\n");
+  printf("\t 5. Sair\n");
+  printf("-- Digite sua escolha: ");
+  scanf(" %c", ((char *)pBuffer + CHOICE));
+  getchar(); //limpa o buffer do teclado
 }
 
 void inserirCadastro(void *pBuffer) {
@@ -79,10 +86,14 @@ void inserirCadastro(void *pBuffer) {
   printf("--INSERINDO CADASTRO--\n");
   printf("Insira um nome: ");
   scanf("%s", ((char *)cadastro + NOME));
-  printf("Insira a idade: ");
-  scanf("%d", (int *)(cadastro + IDADE));
-  printf("Insira um telefone: ");
-  scanf("%d", (int *)(cadastro + TELEFONE));
+  do {
+    printf("Insira uma idade valida: ");
+    scanf("%d", (int *)(cadastro + IDADE));
+  } while (*(int *)(cadastro + IDADE) <= 0);
+  do {
+    printf("Insira um telefone valido: ");
+    scanf("%d", (int *)(cadastro + TELEFONE));
+  } while (*(int *)(cadastro + TELEFONE) < 900000000);
 
   *(void **)(cadastro + P_NEXT) = NULL;
   *(void **)(cadastro + P_PREVIOUS) = NULL;
@@ -170,13 +181,11 @@ void ordenar(void *pBuffer, void *pCadastro) {
   void *cadastroAux = *(void **)(pBuffer + P_LAST);
 
   if (strcmp((char *)(cadastroAux + NOME), (char *)(pCadastro + NOME)) <= 0) {
-
     *(void **)(pCadastro + P_PREVIOUS) = *(void **)(pBuffer + P_LAST);
     cadastroAux = *(void **)(pBuffer + P_LAST);
     *(void **)(pBuffer + P_LAST) = pCadastro;
     *(void **)(cadastroAux + P_NEXT) = pCadastro;
     return;
-
   } else {
     while (cadastroAux != NULL) {
       if (strcmp((char *)(cadastroAux + NOME), (char *)(pCadastro + NOME)) <= 0) {
@@ -191,7 +200,6 @@ void ordenar(void *pBuffer, void *pCadastro) {
       }
       cadastroAux = *(void **)(cadastroAux + P_PREVIOUS);
     }
-    printf("ENTROOOO");
     *(void **)(pCadastro + P_NEXT) = *(void **)(pBuffer + P_FIRST);
     cadastroAux = *(void **)(pBuffer + P_FIRST);
     *(void **)(cadastroAux + P_PREVIOUS) = pCadastro;
