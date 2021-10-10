@@ -53,26 +53,26 @@ int main() {
 }
 
 int Insere(No **ppRaiz, int valor) {
-  if (*ppRaiz == NULL) {
+  if (*ppRaiz == NULL) { //se o no em questão == null
     *ppRaiz = (No *)malloc(sizeof(No));
     (*ppRaiz)->valor = valor;
     (*ppRaiz)->pEsq = NULL;
     (*ppRaiz)->pDir = NULL;
     return 1;
   } else if ((*ppRaiz)->valor > valor) {
-    if (Insere(&(*ppRaiz)->pEsq, valor)) {
+    if (Insere(&(*ppRaiz)->pEsq, valor)) { //insere na esquerda
       if (Balanceamento(ppRaiz)) {
-        return 0;
+        return 0; //raiz alterada
       } else {
-        return 1;
+        return 1; //raiz mantém
       }
     }
-  } else if ((*ppRaiz)->valor < valor) {
+  } else if ((*ppRaiz)->valor < valor) { //insere na direita
     if (Insere(&(*ppRaiz)->pDir, valor)) {
       if (Balanceamento(ppRaiz)) {
-        return 0;
+        return 0; //raiz alterada
       } else {
-        return 1;
+        return 1; //raiz mantém
       }
     }
   } else {
@@ -84,9 +84,9 @@ int Balanceamento(No **ppRaiz) {
   int fb = FB(*ppRaiz);
 
   if (fb > 1) {
-    return balancaEsquerda(ppRaiz);
+    return balancaEsquerda(ppRaiz); //balanca tende esquerda
   } else if (fb < -1) {
-    return balancaDireita(ppRaiz);
+    return balancaDireita(ppRaiz); //balanca tende a direita
   } else {
     return 0;
   }
@@ -137,7 +137,7 @@ void RotacaoDireitaSimples(No **ppRaiz) {
 int balancaEsquerda(No **ppRaiz) {
   int FBE = FB((*ppRaiz)->pEsq);
 
-  if (FBE >= 0) {
+  if (FBE > 0) {
     RotacaoDireitaSimples(ppRaiz);
     // printf("RDSimples\n");
     return 1;
