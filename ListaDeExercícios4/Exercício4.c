@@ -18,6 +18,8 @@ int balancaEsquerda(No **ppRaiz);
 int balancaDireita(No **ppRaiz);
 int EhArvoreArvl(No *pRaiz);
 void limparArvore(No *ppRaiz);
+void ImprimeArvore(No *ppRaiz);
+void SegundoCenario();
 
 int main() {
   int i = 0, valorInserir, numeroDeNos;
@@ -31,18 +33,21 @@ int main() {
 
   while (i < numeroDeNos) {
     valorInserir = rand() % 100;
-    printf("valor inserir: %d\n", valorInserir);
     Insere(&ppRaiz, valorInserir);
     i++;
   }
 
+  ImprimeArvore(ppRaiz);
+
   if (EhArvoreArvl(ppRaiz)) {
-    printf("Arvore AVL\n");
+    printf("\nSUCESSO! Eh Arvore AVL\n");
   } else {
-    printf("Nao eh Arvore AVL\n");
+    printf("\nERRO!! Nao eh Arvore AVL\n");
   }
 
   limparArvore(ppRaiz);
+
+  SegundoCenario();
 
   return 0;
 }
@@ -53,25 +58,24 @@ int Insere(No **ppRaiz, int valor) {
     (*ppRaiz)->valor = valor;
     (*ppRaiz)->pEsq = NULL;
     (*ppRaiz)->pDir = NULL;
-    return 1; //bem sucedido
+    return 1;
   } else if ((*ppRaiz)->valor > valor) {
     if (Insere(&(*ppRaiz)->pEsq, valor)) {
       if (Balanceamento(ppRaiz)) {
-        return 0; //houve balanceamento;
+        return 0;
       } else {
-        return 1; //bem sucedido sem balanceamento;
+        return 1;
       }
     }
   } else if ((*ppRaiz)->valor < valor) {
     if (Insere(&(*ppRaiz)->pDir, valor)) {
       if (Balanceamento(ppRaiz)) {
-        return 0; //houve balanceamento;
+        return 0;
       } else {
-        return 1; //bem sucedido sem balanceamento;
+        return 1;
       }
     }
   } else {
-    printf("Valor ja existe!!\n");
     return 0; //valor já existente;
   }
 }
@@ -135,12 +139,12 @@ int balancaEsquerda(No **ppRaiz) {
 
   if (FBE >= 0) {
     RotacaoDireitaSimples(ppRaiz);
-    printf("RDSimples\n");
+    // printf("RDSimples\n");
     return 1;
   } else if (FBE < 0) {
     RotacaoEsquerdaSimples(&((*ppRaiz)->pEsq));
     RotacaoDireitaSimples(ppRaiz);
-    printf("RDDupla\n");
+    // printf("RDDupla\n");
     return 1;
   }
   return 0;
@@ -151,12 +155,12 @@ int balancaDireita(No **ppRaiz) {
 
   if (FBD <= 0) {
     RotacaoEsquerdaSimples(ppRaiz);
-    printf("RESimples\n");
+    // printf("RESimples\n");
     return 1;
   } else if (FBD > 0) {
     RotacaoDireitaSimples(&((*ppRaiz)->pDir));
     RotacaoEsquerdaSimples(ppRaiz);
-    printf("REDupla\n");
+    // printf("REDupla\n");
     return 1;
   }
   return 0;
@@ -190,4 +194,224 @@ int EhArvoreArvl(No *ppRaiz) {
   } else {
     return 1;
   }
+}
+
+void ImprimeArvore(No *ppRaiz) {
+  if (ppRaiz != NULL) {
+    printf("%d(", ppRaiz->valor);
+    ImprimeArvore(ppRaiz->pEsq);
+    ImprimeArvore(ppRaiz->pDir);
+    printf(")");
+  }
+}
+
+void SegundoCenario() {
+  printf("\n\t--CASO 1A--\n");
+  caso1a();
+  printf("\n\t--CASO 2A--\n");
+  caso2a();
+  printf("\n\t--CASO 3A--\n");
+  caso3a();
+  printf("\n\t--CASO 1B--\n");
+  caso1b();
+  printf("\n\t--CASO 2B--\n");
+  caso2b();
+  printf("\n\t--CASO 3B--\n");
+  caso3b();
+}
+
+void caso1a() {
+  No *ppRaiz = NULL;
+  int valorInserir;
+  valorInserir = 20;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 4;
+  Insere(&ppRaiz, valorInserir);
+  ImprimeArvore(ppRaiz);
+  if (EhArvoreArvl(ppRaiz)) {
+    printf("\nSUCESSO! Eh Arvore AVL\n");
+  } else {
+    printf("\nERRO!! Nao eh Arvore AVL\n");
+  }
+  printf("\n\n");
+  valorInserir = 15;
+  Insere(&ppRaiz, valorInserir);
+  ImprimeArvore(ppRaiz);
+  if (EhArvoreArvl(ppRaiz)) {
+    printf("\nSUCESSO! Eh Arvore AVL\n");
+  } else {
+    printf("\nERRO!! Nao eh Arvore AVL\n");
+  }
+  limparArvore(ppRaiz);
+}
+
+void caso2a() {
+  No *ppRaiz = NULL;
+  int valorInserir;
+  valorInserir = 20;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 4;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 26;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 3;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 9;
+  Insere(&ppRaiz, valorInserir);
+  ImprimeArvore(ppRaiz);
+  if (EhArvoreArvl(ppRaiz)) {
+    printf("\nSUCESSO! Eh Arvore AVL\n");
+  } else {
+    printf("\nERRO!! Nao eh Arvore AVL\n");
+  }
+  printf("\n\n");
+  valorInserir = 15;
+  Insere(&ppRaiz, valorInserir);
+  ImprimeArvore(ppRaiz);
+  if (EhArvoreArvl(ppRaiz)) {
+    printf("\nSUCESSO! Eh Arvore AVL\n");
+  } else {
+    printf("\nERRO!! Nao eh Arvore AVL\n");
+  }
+
+  limparArvore(ppRaiz);
+}
+
+void caso3a() {
+  No *ppRaiz = NULL;
+  int valorInserir;
+  valorInserir = 20;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 4;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 26;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 3;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 9;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 2;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 7;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 11;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 21;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 30;
+  Insere(&ppRaiz, valorInserir);
+  ImprimeArvore(ppRaiz);
+  if (EhArvoreArvl(ppRaiz)) {
+    printf("\nSUCESSO! Eh Arvore AVL\n");
+  } else {
+    printf("\nERRO!! Nao eh Arvore AVL\n");
+  }
+  printf("\n\n");
+  valorInserir = 15;
+  Insere(&ppRaiz, valorInserir);
+  ImprimeArvore(ppRaiz);
+  if (EhArvoreArvl(ppRaiz)) {
+    printf("\nSUCESSO! Eh Arvore AVL\n");
+  } else {
+    printf("\nERRO!! Nao eh Arvore AVL\n");
+  }
+  limparArvore(ppRaiz);
+}
+
+void caso1b() {
+  No *ppRaiz = NULL;
+  int valorInserir;
+  valorInserir = 20;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 4;
+  Insere(&ppRaiz, valorInserir);
+  ImprimeArvore(ppRaiz);
+  if (EhArvoreArvl(ppRaiz)) {
+    printf("\nSUCESSO! Eh Arvore AVL\n");
+  } else {
+    printf("\nERRO!! Nao eh Arvore AVL\n");
+  }
+  printf("\n\n");
+  valorInserir = 8;
+  Insere(&ppRaiz, valorInserir);
+  ImprimeArvore(ppRaiz);
+  if (EhArvoreArvl(ppRaiz)) {
+    printf("\nSUCESSO! Eh Arvore AVL\n");
+  } else {
+    printf("\nERRO!! Nao eh Arvore AVL\n");
+  }
+  limparArvore(ppRaiz);
+}
+
+void caso2b() {
+  No *ppRaiz = NULL;
+  int valorInserir;
+  valorInserir = 20;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 4;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 26;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 3;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 9;
+  Insere(&ppRaiz, valorInserir);
+  ImprimeArvore(ppRaiz);
+  if (EhArvoreArvl(ppRaiz)) {
+    printf("\nSUCESSO! Eh Arvore AVL\n");
+  } else {
+    printf("\nERRO!! Nao eh Arvore AVL\n");
+  }
+  printf("\n\n");
+  valorInserir = 8;
+  Insere(&ppRaiz, valorInserir);
+  ImprimeArvore(ppRaiz);
+  if (EhArvoreArvl(ppRaiz)) {
+    printf("\nSUCESSO! Eh Arvore AVL\n");
+  } else {
+    printf("\nERRO!! Nao eh Arvore AVL\n");
+  }
+
+  limparArvore(ppRaiz);
+}
+
+void caso3b() {
+  No *ppRaiz = NULL;
+  int valorInserir;
+  valorInserir = 20;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 4;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 26;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 3;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 9;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 2;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 7;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 11;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 21;
+  Insere(&ppRaiz, valorInserir);
+  valorInserir = 30;
+  Insere(&ppRaiz, valorInserir);
+  ImprimeArvore(ppRaiz);
+  if (EhArvoreArvl(ppRaiz)) {
+    printf("\nSUCESSO! Eh Arvore AVL\n");
+  } else {
+    printf("\nERRO!! Nao eh Arvore AVL\n");
+  }
+  printf("\n\n");
+  valorInserir = 8;
+  Insere(&ppRaiz, valorInserir);
+  ImprimeArvore(ppRaiz);
+  if (EhArvoreArvl(ppRaiz)) {
+    printf("\nSUCESSO! Eh Arvore AVL\n");
+  } else {
+    printf("\nERRO!! Nao eh Arvore AVL\n");
+  }
+  limparArvore(ppRaiz);
 }
