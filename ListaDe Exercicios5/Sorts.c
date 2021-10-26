@@ -6,8 +6,8 @@ void InsertionSort(int vetorDados[], int numeroDeElementos);
 void SelectionSort(int vetorDados[], int numeroDeElementos);
 void QuickSort(int vetorDados[], int valorEsq, int valorDir);
 void MergeSort(int vetorDados[], int numeroDeElementos);
-void Sort(int vetorDados[], int *vetorAux[], int esq, int dir);
-void Merge(int vetorDados[], int *vetorAux[], int esq, int meio, int dir);
+void Sort(int vetorDados[], int tamanho, int esq, int dir);
+void Merge(int vetorDados[], int tamanho, int esq, int meio, int dir);
 
 int main() {
   int numeroDeElementos, i = 0;
@@ -27,9 +27,9 @@ int main() {
   }
   printf("\n");
 
-  //SelectionSort(vetorDados, numeroDeElementos);
+  // SelectionSort(vetorDados, numeroDeElementos);
   MergeSort(vetorDados, numeroDeElementos);
-  //QuickSort(vetorDados, 0, numeroDeElementos);
+  // QuickSort(vetorDados, 0, numeroDeElementos - 1);
   //InsertionSort(vetorDados, numeroDeElementos);
   for (int i = 0; i < numeroDeElementos; i++) {
     printf("[%d]", vetorDados[i]);
@@ -38,22 +38,23 @@ int main() {
 }
 
 void InsertionSort(int vetorDados[], int numeroDeElementos) {
-  int j, chave;
+  int indiceAux, temp;
   for (int i = 1; i < numeroDeElementos; i++) {
-    chave = vetorDados[i];
-    j = i - 1;
-    while (j >= 0 && vetorDados[j] > chave) {
-      vetorDados[j + 1] = vetorDados[j];
-      j--;
+    temp = vetorDados[i];
+    indiceAux = i - 1;
+    while (indiceAux >= 0 && vetorDados[indiceAux] > temp) {
+      vetorDados[indiceAux + 1] = vetorDados[indiceAux];
+      indiceAux--;
     }
-    vetorDados[j + 1] = chave;
+    vetorDados[indiceAux + 1] = temp;
   }
 }
 
 void SelectionSort(int vetorDados[], int numeroDeElementos) {
   int menorValor, temp, indiceMenorValor;
 
-  for (int i = 0; i < numeroDeElementos - 1; i++) {
+  for (int i = 0; i <= numeroDeElementos; i++) {
+    indiceMenorValor = i;
     menorValor = vetorDados[i];
 
     for (int j = i + 1; j < numeroDeElementos; j++) {
@@ -66,7 +67,6 @@ void SelectionSort(int vetorDados[], int numeroDeElementos) {
     temp = vetorDados[i];
     vetorDados[i] = vetorDados[indiceMenorValor];
     vetorDados[indiceMenorValor] = temp;
-    indiceMenorValor = i + 1;
   }
 }
 
@@ -74,11 +74,12 @@ void QuickSort(int vetorDados[], int valorEsq, int valorDir) {
   int pivo, temp;
   int i = valorEsq, j = valorDir;
   pivo = vetorDados[(valorEsq + valorDir) / 2];
+
   do {
-    while (vetorDados[i] < pivo) {
+    while (vetorDados[i] < pivo) { //buscando o maior
       i++;
     }
-    while (vetorDados[j] > pivo) {
+    while (vetorDados[j] > pivo) { //buscando o menor
       j--;
     }
     if (i <= j) {
@@ -98,46 +99,54 @@ void QuickSort(int vetorDados[], int valorEsq, int valorDir) {
 }
 
 void MergeSort(int vetorDados[], int numeroDeElementos) {
-  int *vetorAux = malloc(sizeof(int) * numeroDeElementos);
-  Sort(vetorDados, vetorAux, 0, numeroDeElementos - 1);
-  free(vetorAux);
+  Sort(vetorDados, numeroDeElementos, 0, numeroDeElementos - 1);
 }
 
-void Sort(int vetorDados[], int *vetorAux[], int esq, int dir) {
+void Sort(int vetorDados[], int tamanho, int esq, int dir) {
   if (esq >= dir) {
     return;
   }
 
   int meio = (esq + dir) / 2;
 
-  Sort(vetorDados, vetorAux, esq, meio);
-  Sort(vetorDados, vetorAux, meio + 1, dir);
+  Sort(vetorDados, tamanho, esq, meio);     //chama recursivamente para dividir o vetor
+  Sort(vetorDados, tamanho, meio + 1, dir); //chama recursivamente para dividir o vetor
 
-  if (vetorDados[meio] <= vetorDados[meio + 1]) {
+  if (vetorDados[meio] <= vetorDados[meio + 1]) { //se já estiver ordenado
     return;
   }
-  Merge(vetorDados, vetorAux, esq, meio, dir);
+  Merge(vetorDados, tamanho, esq, meio, dir); //merge de todas as partes
 }
 
-void Merge(int vetorDados[], int *vetorAux[], int esq, int meio, int dir) {
-  int indiceAux, inicioVetorDados = esq, inicioVetorAux = meio + 1;
+void Merge(int vetorDados[], int tamanho, int esq, int meio, int dir) {
+  int indiceAux = esq, inicioVetorDados = esq, indiceProxMeio = meio + 1;
+  int vetorAux[tamanho];
 
-  for (indiceAux = esq; indiceAux <= dir; indiceAux++) {
-    vetorAux[indiceAux] = vetorDados[indiceAux];
-  }
-  indiceAux = esq;
-  while (inicioVetorDados <= meio && inicioVetorAux <= dir) {
-    /* Invariante: v[i..z] possui os valores de v[iv..m] e v[ic..f] em ordem crescente. */
-    if (vetorAux[inicioVetorDados] <= vetorAux[inicioVetorAux])
-      vetorDados[indiceAux++] = vetorAux[inicioVetorDados++];
-    else
-      vetorDados[indiceAux++] = vetorAux[inicioVetorAux++];
+  for (int i = esq; i <= dir; i++) { //copio o vetor original para um auxiliar
+    vetorAux[i] = vetorDados[i];
   }
 
-  while (inicioVetorDados <= meio)
-    vetorDados[indiceAux++] = vetorAux[inicioVetorDados++];
+  while (inicioVetorDados <= meio && indiceProxMeio <= dir) {
+    if (vetorAux[inicioVetorDados] <= vetorAux[indiceProxMeio]) {
+      vetorDados[indiceAux] = vetorAux[inicioVetorDados];
+      indiceAux++;
+      inicioVetorDados++;
+    } else {
+      vetorDados[indiceAux] = vetorAux[indiceProxMeio];
+      indiceAux++;
+      indiceProxMeio++;
+    }
+  }
 
-  while (inicioVetorAux <= dir) {
-    vetorDados[indiceAux++] = vetorAux[inicioVetorAux++];
+  while (inicioVetorDados <= meio) {
+    vetorDados[indiceAux] = vetorAux[inicioVetorDados];
+    indiceAux++;
+    inicioVetorDados++;
+  }
+
+  while (indiceProxMeio <= dir) {
+    vetorDados[indiceAux] = vetorAux[indiceProxMeio];
+    indiceAux++;
+    indiceProxMeio++;
   }
 }
