@@ -2,38 +2,37 @@
 #include <stdlib.h>
 #include <time.h>
 
+void ImprimeVetor(int vetorDados[], int numeroDeElementos);
+void VerificaOrdem(int vetorDados[], int numeroDeElementos);
+void EscolhaAlgoritmo(int escolha, int vetorDados[], int numeroDeElementos);
+void PreencheVetor(int vetorDados[], int numeroDeElementos);
 void InsertionSort(int vetorDados[], int numeroDeElementos);
 void SelectionSort(int vetorDados[], int numeroDeElementos);
 void QuickSort(int vetorDados[], int valorEsq, int valorDir);
-void MergeSort(int vetorDados[], int numeroDeElementos);
-void Sort(int vetorDados[], int tamanho, int esq, int dir);
+void MergeSort(int vetorDados[], int tamanho, int esq, int dir);
 void Merge(int vetorDados[], int tamanho, int esq, int meio, int dir);
 
 int main() {
-  int numeroDeElementos, i = 0;
+  int numeroDeElementos, escolha;
   srand(time(0));
 
   printf("Informe o numero de elementos do vetor: ");
   scanf("%d", &numeroDeElementos);
 
   int vetorDados[numeroDeElementos];
-  while (i <= numeroDeElementos) {
-    vetorDados[i] = rand() % 100;
-    i++;
-  }
 
-  for (int i = 0; i < numeroDeElementos; i++) {
-    printf("[%d]", vetorDados[i]);
-  }
-  printf("\n");
+  PreencheVetor(vetorDados, numeroDeElementos);
 
-  // SelectionSort(vetorDados, numeroDeElementos);
-  MergeSort(vetorDados, numeroDeElementos);
-  // QuickSort(vetorDados, 0, numeroDeElementos - 1);
-  //InsertionSort(vetorDados, numeroDeElementos);
-  for (int i = 0; i < numeroDeElementos; i++) {
-    printf("[%d]", vetorDados[i]);
-  }
+  ImprimeVetor(vetorDados, numeroDeElementos);
+
+  printf("Escolha o algoritmo de ordenacao: \n");
+  printf("\t1. Insertion\n\t2. Selection\n\t3. Quick\n\t4. Merge\n");
+  scanf("%d", &escolha);
+
+  EscolhaAlgoritmo(escolha, vetorDados, numeroDeElementos);
+
+  VerificaOrdem(vetorDados, numeroDeElementos);
+  ImprimeVetor(vetorDados, numeroDeElementos);
   return 0;
 }
 
@@ -98,19 +97,15 @@ void QuickSort(int vetorDados[], int valorEsq, int valorDir) {
   }
 }
 
-void MergeSort(int vetorDados[], int numeroDeElementos) {
-  Sort(vetorDados, numeroDeElementos, 0, numeroDeElementos - 1);
-}
-
-void Sort(int vetorDados[], int tamanho, int esq, int dir) {
+void MergeSort(int vetorDados[], int tamanho, int esq, int dir) {
   if (esq >= dir) {
     return;
   }
 
   int meio = (esq + dir) / 2;
 
-  Sort(vetorDados, tamanho, esq, meio);     //chama recursivamente para dividir o vetor
-  Sort(vetorDados, tamanho, meio + 1, dir); //chama recursivamente para dividir o vetor
+  MergeSort(vetorDados, tamanho, esq, meio);     //chama recursivamente para dividir o vetor
+  MergeSort(vetorDados, tamanho, meio + 1, dir); //chama recursivamente para dividir o vetor
 
   if (vetorDados[meio] <= vetorDados[meio + 1]) { //se já estiver ordenado
     return;
@@ -149,4 +144,54 @@ void Merge(int vetorDados[], int tamanho, int esq, int meio, int dir) {
     indiceAux++;
     indiceProxMeio++;
   }
+}
+
+void PreencheVetor(int vetorDados[], int numeroDeElementos) {
+  int i = 0;
+  while (i <= numeroDeElementos) {
+    vetorDados[i] = rand() % 100;
+    i++;
+  }
+}
+
+void EscolhaAlgoritmo(int escolha, int vetorDados[], int numeroDeElementos) {
+  switch (escolha) {
+  case 1:
+    printf("\tInsertion\n");
+    InsertionSort(vetorDados, numeroDeElementos);
+    break;
+  case 2:
+    printf("\tSelection\n");
+    SelectionSort(vetorDados, numeroDeElementos);
+    break;
+  case 3:
+    printf("\tQuick\n");
+    QuickSort(vetorDados, 0, numeroDeElementos - 1);
+    break;
+  case 4:
+    printf("\tMerge\n");
+    MergeSort(vetorDados, numeroDeElementos, 0, numeroDeElementos - 1);
+    break;
+  default:
+    printf("Algoritmo invalido!!\n");
+    break;
+  }
+}
+
+void ImprimeVetor(int vetorDados[], int numeroDeElementos) {
+  for (int i = 0; i < numeroDeElementos; i++) {
+    printf("[%d]", vetorDados[i]);
+  }
+  printf("\n");
+}
+
+void VerificaOrdem(int vetorDados[], int numeroDeElementos) {
+  for (int i = 0; i < numeroDeElementos - 1; i++) {
+    if (vetorDados[i] > vetorDados[i + 1]) {
+      printf("NAO esta ORDENADO!!\n");
+      return;
+    }
+  }
+  printf("ORDENADO com SUCESSO\n");
+  return;
 }
