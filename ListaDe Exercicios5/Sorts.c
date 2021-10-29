@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include <time.h>
 
 void ImprimeVetor(int vetorDados[], int numeroDeElementos);
@@ -23,7 +24,7 @@ int main() {
 
   PreencheVetor(vetorDados, numeroDeElementos);
 
-  ImprimeVetor(vetorDados, numeroDeElementos);
+  // ImprimeVetor(vetorDados, numeroDeElementos);
 
   printf("Escolha o algoritmo de ordenacao: \n");
   printf("\t1. Insertion\n\t2. Selection\n\t3. Quick\n\t4. Merge\n");
@@ -32,7 +33,7 @@ int main() {
   EscolhaAlgoritmo(escolha, vetorDados, numeroDeElementos);
 
   VerificaOrdem(vetorDados, numeroDeElementos);
-  ImprimeVetor(vetorDados, numeroDeElementos);
+  // ImprimeVetor(vetorDados, numeroDeElementos);
   return 0;
 }
 
@@ -124,13 +125,12 @@ void Merge(int vetorDados[], int tamanho, int esq, int meio, int dir) {
   while (inicioVetorDados <= meio && indiceProxMeio <= dir) {
     if (vetorAux[inicioVetorDados] <= vetorAux[indiceProxMeio]) {
       vetorDados[indiceAux] = vetorAux[inicioVetorDados];
-      indiceAux++;
       inicioVetorDados++;
     } else {
       vetorDados[indiceAux] = vetorAux[indiceProxMeio];
-      indiceAux++;
       indiceProxMeio++;
     }
+    indiceAux++;
   }
 
   while (inicioVetorDados <= meio) {
@@ -155,22 +155,54 @@ void PreencheVetor(int vetorDados[], int numeroDeElementos) {
 }
 
 void EscolhaAlgoritmo(int escolha, int vetorDados[], int numeroDeElementos) {
+  struct timeval begin, end;
+  long seconds;
+  long microseconds;
+  double elapsed;
   switch (escolha) {
   case 1:
     printf("\tInsertion\n");
+
+    gettimeofday(&begin, 0);
     InsertionSort(vetorDados, numeroDeElementos);
+    gettimeofday(&end, 0);
+    seconds = end.tv_sec - begin.tv_sec;
+    microseconds = end.tv_usec - begin.tv_usec;
+    elapsed = seconds + microseconds * 1e-6;
+    printf("Time measured: %.3f seconds.\n", elapsed);
     break;
   case 2:
     printf("\tSelection\n");
+
+    gettimeofday(&begin, 0);
     SelectionSort(vetorDados, numeroDeElementos);
+    gettimeofday(&end, 0);
+    seconds = end.tv_sec - begin.tv_sec;
+    microseconds = end.tv_usec - begin.tv_usec;
+    elapsed = seconds + microseconds * 1e-6;
+    printf("Time measured: %.3f seconds.\n", elapsed);
     break;
   case 3:
     printf("\tQuick\n");
+
+    gettimeofday(&begin, 0);
     QuickSort(vetorDados, 0, numeroDeElementos - 1);
+    gettimeofday(&end, 0);
+    seconds = end.tv_sec - begin.tv_sec;
+    microseconds = end.tv_usec - begin.tv_usec;
+    elapsed = seconds + microseconds * 1e-6;
+    printf("Time measured: %.3f seconds.\n", elapsed);
     break;
   case 4:
     printf("\tMerge\n");
+
+    gettimeofday(&begin, 0);
     MergeSort(vetorDados, numeroDeElementos, 0, numeroDeElementos - 1);
+    gettimeofday(&end, 0);
+    seconds = end.tv_sec - begin.tv_sec;
+    microseconds = end.tv_usec - begin.tv_usec;
+    elapsed = seconds + microseconds * 1e-6;
+    printf("Time measured: %.3f seconds.\n", elapsed);
     break;
   default:
     printf("Algoritmo invalido!!\n");
